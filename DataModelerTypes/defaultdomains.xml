@@ -1,0 +1,283 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<DomainFile class="oracle.dbtools.crest.model.design.DomainFileWrapper" fileName="defaultdomains">
+<domains>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="Boolean" id="1BCFC475-54C3-B217-6D79-05A83B3C4181">
+<createdBy>A3915</createdBy>
+<createdTime>2022-02-02 15:44:11 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT017</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="Version" id="1EBBD967-C594-0B1D-E43C-0F5ECDE76674">
+<createdBy>A3915</createdBy>
+<createdTime>2022-02-02 15:44:13 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT017</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="Abbreviation" id="2489F7EA-FF21-B73A-71CE-23A5D844AD4B">
+<createdBy>Shaounak</createdBy>
+<createdTime>2022-02-14 19:37:26 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT024</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="Stage System" id="2C3BA167-3289-EEB7-BE50-C788CD2FF1D7">
+<createdBy>Shaounak</createdBy>
+<createdTime>2022-02-14 19:37:26 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT024</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="Visibility" id="2F18A1CF-0631-2403-FFB2-36CC0788CA99">
+<createdBy>Shaounak</createdBy>
+<createdTime>2022-02-14 19:37:26 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<dataTypeSize>500</dataTypeSize>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT024</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="Flag" id="3B8F3224-9908-E1BF-E2A2-552EE9047D09">
+<createdBy>A3915</createdBy>
+<createdTime>2022-02-16 02:37:41 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT006</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="Long Text" id="4392A344-BBBD-1FA5-78B9-58A0190FD265">
+<createdBy>Shaounak</createdBy>
+<createdTime>2021-12-02 06:21:01 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<dataTypeSize>1000</dataTypeSize>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT024</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="Identifier" id="4434C477-478A-E194-8149-F4FCC7428853">
+<createdBy>Shaounak</createdBy>
+<createdTime>2021-12-02 06:21:01 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<dataTypeSize>256</dataTypeSize>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT024</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="Type" id="48432CE3-FE8B-97E3-848E-582F654D9937">
+<createdBy>A3915</createdBy>
+<createdTime>2021-11-12 21:38:32 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<dataTypeSize>100</dataTypeSize>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT024</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="Birth Year" id="566AE0AA-BE5B-0F8E-28E3-37CC2F374066">
+<createdBy>Shaounak</createdBy>
+<createdTime>2021-12-02 06:21:06 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<dataTypePrecision>4</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT019</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="Region" id="573A2673-9B03-F7A9-7E7A-3680F375B3BF">
+<createdBy>Shaounak</createdBy>
+<createdTime>2021-12-02 06:21:07 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<dataTypeSize>100</dataTypeSize>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT024</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="Integer" id="657BF1E1-CA02-7224-9BF3-590B9FE0C46D">
+<createdBy>A3915</createdBy>
+<createdTime>2021-11-17 17:29:19 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT011</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="Identifier_Integer" id="6E50B4B5-613C-8A21-4DB0-D63E27DB005E">
+<createdBy>Shaounak</createdBy>
+<createdTime>2021-11-13 15:43:19 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT027</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="City" id="6E5AF010-4E86-85E8-A5C4-158C8156DDBE">
+<createdBy>A3915</createdBy>
+<createdTime>2021-11-29 22:23:07 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<dataTypeSize>100</dataTypeSize>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT024</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="Zip" id="755840FB-8BC8-5449-26BC-6256CFB7047F">
+<createdBy>A3915</createdBy>
+<createdTime>2021-11-29 19:44:28 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<dataTypeSize>5</dataTypeSize>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT024</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="Address" id="844A6D51-B4AB-4422-67F3-D7FD9926652E">
+<createdBy>A3915</createdBy>
+<createdTime>2022-02-02 15:44:11 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<dataTypeSize>500</dataTypeSize>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT024</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="String" id="8611BDEC-5506-3253-C52B-169514008F13">
+<createdBy>A3915</createdBy>
+<createdTime>2022-02-16 02:37:41 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<dataTypeSize>500</dataTypeSize>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT024</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="String" id="8611BDEC-5506-3253-C52B-169514008F13">
+<createdBy>A3915</createdBy>
+<createdTime>2022-02-16 02:37:41 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<dataTypeSize>500</dataTypeSize>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT024</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="Cost" id="9293FD10-4D9A-2212-E8B1-6BBC0495B59F">
+<createdBy>Shaounak</createdBy>
+<createdTime>2022-02-14 19:37:26 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT024</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="NPI" id="939EE967-870C-86E7-C665-AE0321936DF2">
+<createdBy>Shaounak</createdBy>
+<createdTime>2021-12-21 01:05:08 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<dataTypePrecision>10</dataTypePrecision>
+<dataTypeScale>0</dataTypeScale>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT019</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="Name" id="99D92878-C266-F54E-34D9-C2F760933E09">
+<createdBy>A3915</createdBy>
+<createdTime>2021-11-17 19:27:48 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<dataTypeSize>200</dataTypeSize>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT024</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="Stringv1" id="9A3F329F-F8BB-96AA-69C1-19D6E93D466C">
+<createdBy>A3915</createdBy>
+<createdTime>2022-02-02 15:44:11 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<dataTypeSize>500</dataTypeSize>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT024</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="Code" id="9CD3C565-53F9-1F22-9AA8-A8071373FECD">
+<createdBy>Shaounak</createdBy>
+<createdTime>2021-12-02 06:21:00 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<dataTypeSize>256</dataTypeSize>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT024</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="Therapeutic Area" id="A570CC3F-201E-3719-AA7E-FC7C29B9A562">
+<createdBy>Shaounak</createdBy>
+<createdTime>2022-02-14 19:37:26 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT024</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="Numeric" id="A925ECF9-7A0B-1564-98B4-33351E160192">
+<createdBy>Shaounak</createdBy>
+<createdTime>2021-12-02 06:21:02 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<dataTypePrecision>38</dataTypePrecision>
+<dataTypeScale>18</dataTypeScale>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT019</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="Country" id="BB7E9345-C612-4CBF-9984-39AF6912A412">
+<createdBy>A3915</createdBy>
+<createdTime>2021-11-29 19:44:28 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<dataTypeSize>100</dataTypeSize>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT024</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="Zip10" id="CC60C678-50F1-0936-96BD-9692D5511FFE">
+<createdBy>Shaounak</createdBy>
+<createdTime>2021-12-02 06:21:07 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<dataTypeSize>10</dataTypeSize>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT024</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="Date" id="D9A339FD-1D67-6BE7-53BE-3D90A1D0AD58">
+<createdBy>A3915</createdBy>
+<createdTime>2021-11-17 21:19:04 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT007</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="Unknown" id="DOM3000004">
+<createdBy>Shaounak</createdBy>
+<createdTime>2022-02-28 21:04:44 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT017</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="Leave Behind" id="F3517560-3F12-3556-74B3-30F42AD4F39E">
+<createdBy>Shaounak</createdBy>
+<createdTime>2022-02-14 19:37:26 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT024</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="Title" id="FC592308-1E40-9166-190E-E5B4F58F1010">
+<createdBy>Shaounak</createdBy>
+<createdTime>2022-01-06 19:39:17 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT024</logicalDatatype>
+</Domain>
+<Domain class="oracle.dbtools.crest.model.design.Domain" name="Address Line" id="FED18283-76B2-5F2D-34BD-C2E68B162479">
+<createdBy>A3915</createdBy>
+<createdTime>2022-02-02 15:44:14 UTC</createdTime>
+<ownerDesignName>System</ownerDesignName>
+<avTSortOrder>0</avTSortOrder>
+<dataTypeSize>500</dataTypeSize>
+<fileName>defaultdomains</fileName>
+<logicalDatatype>LOGDT017</logicalDatatype>
+</Domain>
+</domains>
+</DomainFile>

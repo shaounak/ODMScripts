@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<report_templates>
+	<report_template id="076E4B36-3F53-14BB-B782-76FDBAF3D0A8" name="RTemplate_1" class="oracle.dbtools.crest.model.design.relational.Table" >
+		<description_notes>true</description_notes>
+		<quantitative_info>true</quantitative_info>
+		<diagrams>true</diagrams>
+		<table_columns>true</table_columns>
+		<table_columns_comments>true</table_columns_comments>
+		<table_constraints>true</table_constraints>
+		<table_fk_rf>true</table_fk_rf>
+		<table_fk_rt>true</table_fk_rt>
+		<table_indexes>true</table_indexes>
+	</report_template>
+</report_templates>

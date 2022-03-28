@@ -1,0 +1,2398 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dr_custom_scripts>
+    <scr id="9836D087-881D-2161-19AF-2C6DF49A964A" name="Before Create" object="null" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="ddl_transformation">
+        <script>
+            <![CDATA[]]>
+        </script>
+    </scr>
+    <scr id="B50F3C56-0DC4-6376-8CF9-9CB189DC97DD" name="After Create" object="null" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="ddl_transformation">
+        <script>
+            <![CDATA[/*
+variable ddlStatementsList should be used to return the list with DDL statements
+that are created by script - as shown below:
+ddlStatementsList.add(new java.lang.String(ddl));
+other available variables:
+- model - relational model instance
+- pModel - physical model instance
+- table - the table in relational model
+- tableProxy - table definition in physical model
+*/
+var ddl;
+var lname;
+//journal table name suffix
+jnTabSuf = "_JN";
+// trigger name suffix
+jnTrgSuf = "_JNtrg";
+prompt = model.getAppView().getSettings().isIncludePromptInDDL();
+useSchema = model.getAppView().getSettings().isIncludeSchemaInDDL();
+if(model.getStorageDesign().isOpen()){
+	if(useSchema){
+	     lname = tableProxy.getLongName();
+	}else{
+		lname = tableProxy.getName();
+	}
+}else{
+	if(useSchema){
+	     lname = table.getLongName();
+	}else{
+		lname = table.getName();
+	}
+}
+if(prompt){
+	ddl= "PROMPT Creating Journal Table for '"+lname+"';\n";
+}else{
+	ddl = "";
+}
+ddl = ddl + "CREATE TABLE "+lname+jnTabSuf+"\n"+
+" (JN_OPERATION CHAR(3) NOT NULL"+"\n"+
+" ,JN_ORACLE_USER VARCHAR2(30) NOT NULL"+"\n"+
+" ,JN_DATETIME DATE NOT NULL"+"\n"+
+" ,JN_NOTES VARCHAR2(240)"+"\n"+
+" ,JN_APPLN VARCHAR2(35)"+"\n"+
+" ,JN_SESSION NUMBER(38)"+"\n";
+cols = table.getElements();
+for(var i=0;i<cols.length;i++){
+	col = cols[i];
+	ddl = ddl +" ,"+col.getName()+" "+col.getDatatypeString();
+	if(col.isMandatory()){
+		ddl = ddl + " NOT NULL\n";
+	}else{
+		ddl = ddl + "\n";
+	}
+}
+ddl = ddl + " );";
+ddlStatementsList.add(new java.lang.String(ddl));
+if(prompt){
+	ddl= "\nPROMPT Creating Journal Trigger for '"+lname+"';\n";
+}else{
+	ddl = "\n";
+}
+ddl = ddl +
+"CREATE OR REPLACE TRIGGER "+lname+jnTrgSuf +"\n"+
+"  AFTER \n" +
+"  INSERT OR \n" +
+"  UPDATE OR \n" +
+"  DELETE ON "+lname+" for each row \n" +
+" Declare \n" +
+"  rec "+lname+"_JN"+"%ROWTYPE; \n" +
+"  blank "+lname+"_JN"+"%ROWTYPE; \n" +
+"  BEGIN \n" +
+"    rec := blank; \n" +
+"    IF INSERTING OR UPDATING THEN \n" ;
+for(var i=0;i<cols.length;i++){
+	col = cols[i];
+	ddl = ddl + "      rec."+col.getName()+" := :NEW."+col.getName()+"; \n";
+}
+ddl = ddl +
+"      rec.JN_DATETIME := SYSDATE; \n" +
+"      rec.JN_ORACLE_USER := SYS_CONTEXT ('USERENV', 'SESSION_USER'); \n" +
+"      rec.JN_APPLN := SYS_CONTEXT ('USERENV', 'MODULE'); \n" +
+"      rec.JN_SESSION := SYS_CONTEXT ('USERENV', 'SESSIONID'); \n" +
+"      IF INSERTING THEN \n" +
+"        rec.JN_OPERATION := 'INS'; \n" +
+"      ELSIF UPDATING THEN \n" +
+"        rec.JN_OPERATION := 'UPD'; \n" +
+"      END IF; \n" +
+"    ELSIF DELETING THEN \n" ;
+for(var i=0;i<cols.length;i++){
+	col = cols[i];
+	ddl = ddl + "      rec."+col.getName()+" := :OLD."+col.getName()+"; \n";
+}
+ddl = ddl +
+"      rec.JN_DATETIME := SYSDATE; \n" +
+"      rec.JN_ORACLE_USER := SYS_CONTEXT ('USERENV', 'SESSION_USER'); \n" +
+"      rec.JN_APPLN := SYS_CONTEXT ('USERENV', 'MODULE'); \n" +
+"      rec.JN_SESSION := SYS_CONTEXT ('USERENV', 'SESSIONID'); \n" +
+"      rec.JN_OPERATION := 'DEL'; \n" +
+"    END IF; \n" +
+"    INSERT into "+lname+"_JN"+" VALUES rec; \n" +
+"  END; \n" +
+"  /"
+ddlStatementsList.add(new java.lang.String(ddl));]]>
+        </script>
+    </scr>
+    <scr id="DC383793-5C2E-F62A-5241-35B8ACE86134" name="End Of Script" object="null" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="ddl_transformation">
+        <script>
+            <![CDATA[]]>
+        </script>
+    </scr>
+    <scr id="1C0CDD35-A0D6-47E5-C702-7FB537C8A8C0" name="Instead Of Create" object="null" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="ddl_transformation">
+        <script>
+            <![CDATA[]]>
+        </script>
+    </scr>
+    <scr id="0DC38187-8245-8904-7E00-D4B6DF394899" name="Before Create" object="null" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="ddl_transformation">
+        <script>
+            <![CDATA[]]>
+        </script>
+    </scr>
+    <scr id="83D0D285-DF95-0BE7-EF4F-AC3F2D9CDE94" name="After Create" object="null" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="ddl_transformation">
+        <script>
+            <![CDATA[ddl = "-- After Create script example for table " +table.getLongName();
+ddlStatementsList.add(new java.lang.String(ddl));]]>
+        </script>
+    </scr>
+    <scr id="6FDC20F3-D5B1-9711-C93F-745217AC8664" name="End Of Script" object="null" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="ddl_transformation">
+        <script>
+            <![CDATA[]]>
+        </script>
+    </scr>
+    <scr id="27EEAD3F-3367-9D6F-8E02-D44189C855A1" name="Instead Of Create" object="null" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="ddl_transformation">
+        <script>
+            <![CDATA[]]>
+        </script>
+    </scr>
+    <scr id="AEDD667E-0CE6-57AE-2840-84587C608D45" name="All Names in Title Case(For An Entity)" object="logical" engine="Oracle Nashorn" type="" var="model" library="ODMGeneral" method="checkcomments" purpose="transformation">
+        <script>
+            <![CDATA[// variable used to return custom message
+var ruleMessage;
+// variable used to return the type of the rule Error
+// or Warning and red/blue color will be used for result
+// if another custom type is returned (Problem in the rule below) 
+// then result is colored in yellow
+var errType;
+var table;
+function checkcomments(object){
+ result = true;
+ ruleMessage="";
+ if(object.getCommentInRDBMS().equals("")){
+  ruleMessage="no comments in RDBMS defined";
+  errType="Problem:";
+  result = false;
+ }
+ if(object.getComment().equals("")){
+  if(ruleMessage.equals("")){
+   ruleMessage="no comments defined";
+  }else{
+   ruleMessage= ruleMessage +" , no comments defined";
+   }
+   // can be changed to Warning    
+   errType="Warn:";
+  return false;
+ }
+ return result;
+}
+//rule for not null constraint name
+function NotNullConstr_Name_Length(column){
+ model = column.getDesignPart();
+ name = column.getNotNullConstraintName();
+ result = true;
+ if(name!=null && !"".equals(name)){
+	holder = model.getNamingOptionsHolderFor("oracle.dbtools.crest.model.design.constraint.TableLevelConstraint");
+	if ((holder.getMaxNameLength() > 0) && (name.length() > holder.getMaxNameLength())) {
+		result = false;
+	}
+ }
+ return result
+}
+
+function checkDomain(attribute){ 
+ result = true;
+ ruleMessage="";
+ if(attribute.getDomain().getName() == "Unknown"){
+  ruleMessage=" No domain set for the attribute";
+  errType="Problem:";
+  result = false;
+ }
+ return result;
+}]]>
+        </script>
+    </scr>
+    <scr id="A3C67B38-C82E-C416-1AD7-D19AB9BC8BB9" name="All Names in Title Case(For Entire Logical Model)" object="logical" engine="Oracle Nashorn" type="" var="model" library="ODMGeneral" method="checkcomments" purpose="transformation">
+        <script>
+            <![CDATA[// variable used to return custom message
+var ruleMessage;
+// variable used to return the type of the rule Error
+// or Warning and red/blue color will be used for result
+// if another custom type is returned (Problem in the rule below) 
+// then result is colored in yellow
+var errType;
+var table;
+function checkcomments(object){
+ result = true;
+ ruleMessage="";
+ if(table.getCommentInRDBMS().equals("")){
+  ruleMessage="no comments in RDBMS defined";
+  errType="Problem:";
+  result = false;
+ }
+ if(table.getComment().equals("")){
+  if(ruleMessage.equals("")){
+   ruleMessage="no comments defined";
+  }else{
+   ruleMessage= ruleMessage +" , no comments defined";
+   }
+   // can be changed to Warning    
+   errType="Error";
+  return false;
+ }
+ return result;
+}
+//rule for not null constraint name
+function NotNullConstr_Name_Length(column){
+ model = column.getDesignPart();
+ name = column.getNotNullConstraintName();
+ result = true;
+ if(name!=null && !"".equals(name)){
+	holder = model.getNamingOptionsHolderFor("oracle.dbtools.crest.model.design.constraint.TableLevelConstraint");
+	if ((holder.getMaxNameLength() > 0) && (name.length() > holder.getMaxNameLength())) {
+		result = false;
+	}
+ }
+ return result
+}]]>
+        </script>
+    </scr>
+    <scr id="12F9EA48-726B-931E-8698-7DC670B6AF09" name="Bulk Set Domain For Attribute" object="logical" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[var loop = true;
+var JOptionPane = javax.swing.JOptionPane;
+var showConfirmDialog = function (message) {
+    return JOptionPane.showConfirmDialog(null, message, "Change Additional Domains",
+        JOptionPane.YES_NO_OPTION,
+        JOptionPane.QUESTION_MESSAGE);
+}
+while (loop) {
+    loop = false;
+    var elemNm = JOptionPane.showInputDialog("Enter the Attribute Name").replace(/_/g, " ");;
+    var domNm = JOptionPane.showInputDialog("Enter the Domain name");
+    dom = model.design.getDomainSet().getByName(domNm);
+    entities = model.getEntitySet().toArray();
+    relations = model.getRelationSet().toArray();
+    if (dom) {
+        for (var t = 0; t < entities.length; t++) {
+            entity = entities[t];
+            entity.getElementsCollection().forEach(function (element) {
+                if (element.getName().indexOf(elemNm) >= 0) {
+                    element.setUse(0);
+                    element.setDomain(dom);
+                }
+            });
+        }
+        for (var r = 0; r < relations.length; r++) {
+            var relation = relations[r];
+            relation.getAttributesCollection().forEach(function (attribute) {
+                if (attribute.getName().indexOf(elemNm) >= 0) {
+                    attribute.setUse(0);
+                    attribute.setDomain(dom);
+                }
+            });
+        }
+    } else {
+        javax.swing.JOptionPane.showMessageDialog(null, "Domain name with name: " + domNm + " doesn't exists");
+    }
+
+    if (JOptionPane.YES_OPTION == showConfirmDialog("Do you want to change the additinal domains?")) {
+        loop = true;
+    }
+}]]>
+        </script>
+    </scr>
+    <scr id="CEE2C736-D88F-4E15-30E9-BC3C9F85226B" name="Bulk Set Domain For Attribute - Using CSV" object="logical" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[var csvInputDomainFile = java.lang.System.getProperty("user.home") + "\\Projects\\DataModelChanges\\DM_Attributes.csv"
+var sc = new java.util.Scanner(new java.io.File(csvInputDomainFile));
+var succList = new Array();
+var errList = new Array();
+var output = "";
+sc.nextLine()
+while (sc.hasNext())  //returns a boolean value  
+{
+    sc_line = new java.util.Scanner(sc.nextLine());
+    sc_line.useDelimiter(",");
+    var elem = null;
+    var dom = null;
+    var entity = null;
+
+    elemNm = sc_line.next().replace(/\n|\r/g, "");
+    domNm = sc_line.next().replace(/\n|\r/g, "");
+
+    entities = model.getEntitySet().toArray();
+    for (var t = 0; t < entities.length; t++) {
+        entity = entities[t];
+        try {
+            var success = false;
+            elem = entity.getElementByName(elemNm);
+            if (!elem) {
+                var relations = entity.getRelations();
+                for (var i = 0; i < relations.size(); i++) {
+                    var attrCol = relations[i].getAttributesCollection();
+                    for (var j = 0; j < attrCol.size(); j++) {
+                        if (attrCol[j].getName().equalsIgnoreCase(elemNm)) {
+                            elem = attrCol[j];
+                            break;
+                        }
+                    }
+                    if (elem) { break; }
+                }
+            }
+            if (!elem) {
+                throw new Error('No attribute found');
+            }
+            else {
+                dom = model.design.getDomainSet().getByName(domNm);
+                if (!dom) {
+                    throw new Error("Domain: " + domNm + "; doesn't exists");
+                }
+                elem.setUse(0);
+                elem.setDomain(dom);
+                if (!elem.getDomain().getName().equalsIgnoreCase(domNm)) {
+                    throw new Error("Domain change: Failed");
+                } else {
+                    succList.push([entity.getName(), elemNm, domNm, "Domain change: Succeed"]);
+                }
+            }
+        } catch (err) {
+            errList.push([entity.getName(), elemNm, domNm, err]);
+        }
+    }
+}
+
+if (succList.length > 0) {
+    for (var i = 0; i < succList.length; i++) {
+        output += succList[i][0] + ';' + succList[i][1] + ';' + succList[i][2] + ';' + succList[i][3] + '\n'
+    }
+    output = "\n---------------------------------------------\n" + output;
+    output += "---------------------------------------------\n";
+}
+
+javax.swing.JOptionPane.showMessageDialog(null, output);
+output = ""
+if (errList.length > 0) {
+    for (var i = 0; i < errList.length; i++) {
+        output += errList[i][0] + ';' + errList[i][1] + ';' + errList[i][2] + ';' + errList[i][3] + '\n'
+    }
+    output = "\n---------------------------------------------\n" + output;
+    output += "---------------------------------------------\n";
+}
+javax.swing.JOptionPane.showMessageDialog(null, output);]]>
+        </script>
+    </scr>
+    <scr id="0EB7D662-D93D-0FA6-1BAE-1905B88D8852" name="Bulk Set Null to attribute in all entities" object="logical" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[var loop = true;
+var JOptionPane = javax.swing.JOptionPane;
+var showConfirmDialog = function (message, title) {
+    return JOptionPane.showConfirmDialog(null, message, title,
+        JOptionPane.YES_NO_OPTION,
+        JOptionPane.QUESTION_MESSAGE);
+}
+while (loop) {
+    loop = false;
+    var elemNm = JOptionPane.showInputDialog("Enter the Attribute Name").replace(/_/g, " ");;
+    var nullability = showConfirmDialog("Press Yes to make the attribute Nullable, No to make it non nullable", "Confirmation");    
+    entities = model.getEntitySet().toArray();
+    relations = model.getRelationSet().toArray();
+    relations = model.getRelationSet().toArray();
+    for (var t = 0; t < entities.length; t++) {
+        entity = entities[t];
+        entity.getElementsCollection().forEach(function (element) {
+            if (element.getName().indexOf(elemNm) >= 0) {
+                element.setMandatory(true ? nullability != JOptionPane.YES_OPTION : false);
+            }
+        });
+    }
+    for (var r = 0; r < relations.length; r++) {
+        var relation = relations[r];
+        relation.getAttributesCollection().forEach(function (attribute) {
+            if (attribute.getName().indexOf(elemNm) >= 0) {
+                attribute.setMandatory(true ? nullability != JOptionPane.YES_OPTION : false);;
+            }
+        });
+    }
+
+    if (JOptionPane.YES_OPTION == showConfirmDialog("Do you wish change the nullability for the additional attributes?", "Confirmation")) {
+        loop = true;
+    }
+}]]>
+        </script>
+    </scr>
+    <scr id="A44A415C-644F-52A2-2F5E-A6F538BD893B" name="Bulk Set Null to entity attribute - Using CSV" object="logical" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[function chooseCSVFile() {
+    var jfc = new javax.swing.JFileChooser(javax.swing.filechooser.FileSystemView.getFileSystemView().getHomeDirectory());
+
+    var returnValue = jfc.showOpenDialog(null);
+
+    if (returnValue == javax.swing.JFileChooser.APPROVE_OPTION) {
+        var selectedFile = jfc.getSelectedFile();
+    }
+    return selectedFile;
+}
+
+function logMessageToLogFile(file, content) {
+    content += '\n';
+    var b = content.getBytes();
+    java.nio.file.Files.write(file.toPath(), b, java.nio.file.StandardOpenOption.APPEND);
+}
+
+function openLogFile(tempFile) {
+    var pb = new java.lang.ProcessBuilder("Notepad++.exe", tempFile.getAbsolutePath());
+    var p = pb.start();
+    try {
+        var rc = p.waitFor();
+    } catch (e) {
+
+    }
+
+}
+
+function getElementForTheEntity(entity, elemNm) {
+    try {
+        var elem = entity.getElementByName(elemNm);
+        if (!elem) {
+            var relations = entity.getRelations();
+            for (var i = 0; i < relations.size(); i++) {
+                var attrCol = relations[i].getAttributesCollection();
+                // logMessageToLogFile(tempFile, "Total attributes in the relations are: " + attrCol.size());
+                for (var j = 0; j < attrCol.size(); j++) {
+                    // logMessageToLogFile(tempFile, "Checking: " + attrCol[j].getName());
+                    if (attrCol[j].getName().equalsIgnoreCase(elemNm)) {
+                        elem = attrCol[j];
+                        return elem;
+                    }
+                }
+            }
+        }
+        return elem;
+    } catch (error) {
+        throw new Error(error);
+    }
+}
+
+var tempFile = java.io.File.createTempFile("OracleSDDMAttributeNullability-", ".tmp");
+openLogFile(tempFile);
+
+var csvInputDomainFile = java.lang.System.getProperty("user.home") + "\\Projects\\DataModelChanges\\ChangeNullablity.csv"
+var sc = new java.util.Scanner(new java.io.File(csvInputDomainFile));
+var entityNm = "";
+var elemNm = "";
+var nullability = "";
+sc.nextLine();
+var errList = new Array();
+//var output = "\n---------------------------------------------\n";
+var output = "";
+
+while (sc.hasNext())  //returns a boolean value  
+{
+    var elem = null;
+    var entity = null;
+
+    sc_line = new java.util.Scanner(sc.nextLine());
+    sc_line.useDelimiter(",");
+
+    entityNm = sc_line.next().replace(/\n|\r/g, "").replace(/_/g, " ");
+    elemNm = sc_line.next().replace(/\n|\r/g, "").replace(/_/g, " ");
+    nullability = sc_line.next().replace(/\n|\r/g, "");
+
+    try {
+        entity = model.getEntitySet().getByName(entityNm);
+        if (!entity) {
+            throw new Error("Entity not found");
+        }
+    } catch (err) {
+        logMessageToLogFile(tempFile, [entityNm, elemNm, nullability, err].join(","));
+        continue;
+    }
+
+    try {
+        elem = getElementForTheEntity(entity, elemNm);
+        if (!elem) {
+            throw new Error('Error while getting the attribute');
+        }
+    } catch (err) {
+        logMessageToLogFile(tempFile, [entityNm, elemNm, err].join(","));
+        continue;
+    }
+
+    if (elem) {
+        try {
+            elem.setMandatory(true ? nullability != "YES" : false);
+            if (elem.isMandatory() != true ? nullability != "YES" : false) {
+                throw new Error("Setting the Mandatory Failed!");
+            } else {
+                logMessageToLogFile(tempFile, [entityNm, elemNm, nullability, "Setting the Mandatory Passed!"].join(","));
+            }
+        } catch (err) {
+            logMessageToLogFile(tempFile, [entityNm, elemNm, nullability, err].join(","));
+            continue;
+        }
+    } else {
+        throw new Error("Error while getting the attribute");
+    }
+}
+sc.close();  //closes the scanner
+tempFile.deleteOnExit();]]>
+        </script>
+    </scr>
+    <scr id="3897FAED-7102-FB4C-3B38-D3B7BA0836A8" name="Bulk Set RDBMS Comments From Blank To Attribute Name" object="logical" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[function logMessageToLogFile(file, content) {
+    content += '\n';
+    var b = content.getBytes();
+    java.nio.file.Files.write(file.toPath(), b, java.nio.file.StandardOpenOption.APPEND);
+}
+
+function createLogMessage(attr) {
+    return attr.join(",");
+}
+
+function openLogFile(tempFile) {
+    var pb = new java.lang.ProcessBuilder("Notepad++.exe", tempFile.getAbsolutePath());
+    var p = pb.start();
+    try {
+        var rc = p.waitFor();
+    } catch (e) {
+
+    }
+
+}
+var JOptionPane = javax.swing.JOptionPane;
+var showConfirmDialog = function (message) {
+    return JOptionPane.showConfirmDialog(null, message, "Confirm Delete",
+        JOptionPane.YES_NO_OPTION,
+        JOptionPane.QUESTION_MESSAGE);
+}
+
+
+if (JOptionPane.YES_OPTION == showConfirmDialog("This script will copy the attribute name to the comments wherever it's null", "Do you wish to continue?")) {
+    var tempFile = java.io.File.createTempFile("OracleSDDMAttributeNullability-", ".tmp");
+    openLogFile(tempFile);
+    var entities = model.getEntitySet().toArray();
+    var relations = model.getRelationSet().toArray();
+
+    for (var i = 0; i < entities.length; i++) {
+        var entity = entities[i];
+
+        var attributes = entity.getAttributes()
+
+        for (var j = 0; j < attributes.length; j++) {
+            var attribute = attributes[j];
+
+            current_comments = attribute.getCommentInRDBMS();
+            if (current_comments.equals("") || current_comments.equals(",,Yes")) {
+                logMessageToLogFile(tempFile, createLogMessage([entity.getName(), attribute.getName(), attribute.getCommentInRDBMS()]));
+                attribute.setCommentInRDBMS(attribute.getName())
+                logMessageToLogFile(tempFile, createLogMessage([entity.getName(), attribute.getName(), "Setting Comments: SUCCESS"]));
+            }
+        }
+    }
+
+    for (var r = 0; r < relations.length; r++) {
+        var relation = relations[r];
+        relation.getAttributesCollection().forEach(function (attribute) {
+            current_comments = attribute.getCommentInRDBMS();
+            if (current_comments.equals(",,Yes") || current_comments.equals("")) {
+                attribute.setCommentInRDBMS(attribute.getName())
+                logMessageToLogFile(tempFile, createLogMessage([relation.getName(), attribute.getName(), "Setting Comments: SUCCESS"]));
+            }
+        });
+    }
+}
+// try {
+//     entity = model.getEntitySet().getByName(entityNm);
+//     if (!entity) {
+//         throw new Error("Entity not found");
+//     } else {
+//         entity.setCommentInRDBMS(rdbmsComments);
+//         logMessageToLogFile(tempFile, createLogMessage([entityNm, "Setting Comments: SUCCESS"]));
+//     }
+// } catch (err) {
+//     logMessageToLogFile(tempFile, createLogMessage([entityNm, err]));
+// }
+tempFile.deleteOnExit();]]>
+        </script>
+    </scr>
+    <scr id="838E0B00-2C29-CC8A-3312-3B862AC59EE1" name="Bulk Set RDBMS Comments to the Entity - Using CSV" object="logical" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[function logMessageToLogFile(file, content) {
+    content += '\n';
+    var b = content.getBytes();
+    java.nio.file.Files.write(file.toPath(), b, java.nio.file.StandardOpenOption.APPEND);
+}
+
+function createLogMessage(attr) {
+    return attr.join(",");
+}
+
+function openLogFile(tempFile) {
+    var pb = new java.lang.ProcessBuilder("Notepad++.exe", tempFile.getAbsolutePath());
+    var p = pb.start();
+    try {
+        var rc = p.waitFor();
+    } catch (e) {
+
+    }
+
+}
+var JOptionPane = javax.swing.JOptionPane;
+var showConfirmDialog = function (message) {
+    return JOptionPane.showConfirmDialog(null, message, "Confirm Delete",
+        JOptionPane.YES_NO_OPTION,
+        JOptionPane.QUESTION_MESSAGE);
+}
+
+var csvInputDomainFile = java.lang.System.getProperty("user.home") + "\\Documents\\LH_Dispense_DM_Attributes_Comments.CSV"
+
+if (JOptionPane.YES_OPTION == showConfirmDialog("This script will apply the Entity comments to the entire logical model using the CSV file: " + csvInputDomainFile + ", Do you wish to continue?")) {
+    var sc = new java.util.Scanner(new java.io.File(csvInputDomainFile));
+    var tempFile = java.io.File.createTempFile("OracleSDDMAttributeNullability-", ".tmp");
+    openLogFile(tempFile);
+
+    var entityNm, elementNm, rdbmsComments = "";
+    sc.nextLine();
+
+    while (sc.hasNext())  //returns a boolean value  
+    {
+        var entity = null;
+        var elem = null;
+	    
+        sc_line = new java.util.Scanner(sc.nextLine());
+        sc_line.useDelimiter(",");
+
+        entityNm = sc_line.next().replace(/\n|\r/g, "");
+        
+        rdbmsComments = "";
+        while(sc_line.hasNext()) {
+            rdbmsComments += sc_line.next().replace(/\n|\r/g, "");
+            rdbmsComments += sc_line.hasNext() ? "," : "";
+        }
+        
+
+        try {
+            entity = model.getEntitySet().getByName(entityNm);
+            if (!entity) {
+                throw new Error("Entity not found");
+            } else {
+                entity.setCommentInRDBMS(rdbmsComments);
+                logMessageToLogFile(tempFile, createLogMessage([entityNm, "Setting Comments: SUCCESS"]));
+            }
+        } catch (err) {
+            logMessageToLogFile(tempFile, createLogMessage([entityNm, err]));
+        }
+    }
+    sc.close();  //closes the scanner
+    tempFile.deleteOnExit();
+}]]>
+        </script>
+    </scr>
+    <scr id="D386227C-CB1B-E8AF-B460-9EC4F55B5B01" name="Bulk Set RDBMS Comments to the Entity Attribute - Using CSV" object="logical" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[function chooseCSVFile() {
+    var jfc = new javax.swing.JFileChooser(javax.swing.filechooser.FileSystemView.getFileSystemView().getHomeDirectory());
+
+    var returnValue = jfc.showOpenDialog(null);
+
+    if (returnValue == javax.swing.JFileChooser.APPROVE_OPTION) {
+        var selectedFile = jfc.getSelectedFile();
+    }
+    return selectedFile;
+}
+function logMessageToLogFile(file, content) {
+    content += '\n';
+    var b = content.getBytes();
+    java.nio.file.Files.write(file.toPath(), b, java.nio.file.StandardOpenOption.APPEND);
+}
+
+function createLogMessage(attr) {
+    return attr.join(",");
+}
+
+function openLogFile(tempFile) {
+    var pb = new java.lang.ProcessBuilder("notepad++.exe", tempFile.getAbsolutePath());
+    var p = pb.start();
+    try {
+        var rc = p.waitFor();
+    } catch (e) {
+
+    }
+}
+
+function getElementForEntity(entity, elementName) {
+    var element = entity.getElementByName(elementName);
+    if (!element) {
+        var relations = entity.getRelations();
+
+        for (var r = 0; r < relations.length; r++) {
+            var relation = relations[r];
+            if (relation.getTargetEntity().getName().equalsIgnoreCase(entity.getName())) {
+                relation.getAttributesCollection().forEach(function (attribute) {
+                    if (attribute.getName().equalsIgnoreCase(elementName)) {
+                        element = attribute;
+                    }
+                });
+            }
+        }
+    }
+    return element;
+}
+var JOptionPane = javax.swing.JOptionPane;
+var showConfirmDialog = function (message) {
+    return JOptionPane.showConfirmDialog(null, message, "Confirm Delete",
+        JOptionPane.YES_NO_OPTION,
+        JOptionPane.QUESTION_MESSAGE);
+}
+
+//var csvInputFile = java.lang.System.getProperty("user.home") + "\\Projects\\DataModelChanges\\DMAttributeCommentsInRDBMS.CSV"
+//var csvInputFile = java.lang.System.getProperty("user.home") + "\\Documents\\LH_Dispense_DM_Attributes_Comments.csv"
+var csvInputFile = chooseCSVFile();
+
+if (JOptionPane.YES_OPTION == showConfirmDialog("This script will apply the attribute comments to the entire logical model using the CSV file: " + csvInputFile + ", Do you wish to continue?")) {
+    var sc = new java.util.Scanner(new java.io.File(csvInputFile));
+    var tempFile = java.io.File.createTempFile("OracleSDDMAttributeCommentsInRDBMS-", ".tmp");
+    openLogFile(tempFile);
+
+    var currEntityNm, prevEntityNm, isRelation = false, elementNm, rdbmsComments = "";
+    sc.nextLine();
+
+    while (sc.hasNext())  //returns a boolean value  
+    {
+        var entity = null;
+        var elem = null;
+
+        sc_line = new java.util.Scanner(sc.nextLine());
+        sc_line.useDelimiter(",");
+
+        currEntityNm = sc_line.next().replace(/\n|\r/g, "");
+        elementNm = sc_line.next().replace(/\n|\r/g, "");
+
+        rdbmsComments = "";
+        while (sc_line.hasNext()) {
+            rdbmsComments += sc_line.next().replace(/\n|\r/g, "");
+            rdbmsComments += sc_line.hasNext() ? "," : "";
+        }
+
+
+        try {
+            if (!currEntityNm.equalsIgnoreCase(prevEntityNm)) {
+                isRelation = false;
+                entity = model.getEntitySet().getByName(currEntityNm);
+                if (!entity) {
+                    entity = model.getRelationSet().getByName(currEntityNm);
+                    isRelation = true;
+                    if (!entity) {
+                        throw new Error("Entity not found");
+                    }
+                }
+            }
+        } catch (err) {
+            logMessageToLogFile(tempFile, createLogMessage([currEntityNm, elementNm, err]));
+        }
+        try {
+            elem = getElementForEntity(entity, elementNm)
+            if (!elem) {
+                throw new Error("Attribute not found");
+            } else {
+                elem.setCommentInRDBMS(rdbmsComments);
+                logMessageToLogFile(tempFile, createLogMessage([currEntityNm, elementNm, "Setting Comments: SUCCESS"]));
+            }
+        } catch (err) {
+            logMessageToLogFile(tempFile, createLogMessage([currEntityNm, elementNm, err]));
+        }
+    }
+    sc.close();  //closes the scanner
+    tempFile.deleteOnExit();
+}]]>
+        </script>
+    </scr>
+    <scr id="550D7465-4304-A135-2034-90C10D414B32" name="Create Entities and Attributes" object="logical" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[function chooseCSVFile() {
+    var jfc = new javax.swing.JFileChooser(javax.swing.filechooser.FileSystemView.getFileSystemView().getHomeDirectory());
+
+    var returnValue = jfc.showOpenDialog(null);
+
+    if (returnValue == javax.swing.JFileChooser.APPROVE_OPTION) {
+        var selectedFile = jfc.getSelectedFile();
+    }
+    return selectedFile;
+}
+
+function getEntityByName(entityName) {
+    var entity = undefined;
+    var success = false;
+
+    var entities = model.getEntitySet().toArray();
+    if (!entities) {
+        return undefined;
+    } else {
+        for (var i = 0; i < entities.length; i++) {
+            if (entities[i].getName().equalsIgnoreCase(entityName)) {
+                success = true;
+                entity = entities[i];
+                break;
+            }
+        }
+        return success ? entity : undefined;
+    }
+}
+
+function logMessageToLogFile(file, content) {
+    content += '\n';
+    var b = content.getBytes();
+    java.nio.file.Files.write(file.toPath(), b, java.nio.file.StandardOpenOption.APPEND);
+}
+
+function openLogFile(tempFile) {
+    var pb = new java.lang.ProcessBuilder("Notepad++.exe", tempFile.getAbsolutePath());
+    var p = pb.start();
+    try {
+        var rc = p.waitFor();
+    } catch (e) {
+
+    }
+
+}
+
+function createEntityIfNotExists(entityName) {
+    var entity = getEntityByName(entityName);
+
+    if (!entity) {
+        entity = model.createEntity(entityName);
+        logMessageToLogFile(tempFile, "---------------------------------------------------");
+        logMessageToLogFile(tempFile, "Created new entity: " + entityName)
+        logMessageToLogFile(tempFile, "---------------------------------------------------");
+    }
+    return entity;
+}
+
+function createDomainIfNotExists(domainName, tSize, tPrecision, tScale) {
+    dom = model.design.getDomainSet().getByName(domainName);
+    if (!dom) {
+        dom = model.design.createDomain();
+        dom.setName(domainName);
+        dom.setLogicalDatatype(model.design.getLogicalDatatypeSet().getLogTypeByName(logicalTypeName))
+        if (tSize.length > 0) {
+            attribute.setDataTypeSize(tSize);
+        }
+        if (tPrecision.length > 0) {
+            attribute.setDataTypePrecision(tPrecision);
+        }
+        if (tScale.length > 0) {
+            attribute.setDataTypeScale(tScale);
+        }
+    }
+    return dom;
+}
+
+function createAttributeIfNotExists(entity, attributeName) {
+    var attribute = entity.getElementByName(attributeName);
+    try {
+        if (!attribute) {
+            var relations = entity.getRelations();
+            for (var i = 0; i < relations.size(); i++) {
+                var relationshipAttributes = relations[i].getAttributesCollection();
+                for (var j = 0; j < relationshipAttributes.size(); j++) {
+                    if (relationshipAttributes[j].getName().equalsIgnoreCase(attributeName)) {
+                        attribute = relationshipAttributes[j];
+                        return attribute;
+                    }
+                }
+            }
+        } else {
+            logMessageToLogFile(tempFile, "Entity Name: " + entity.getName() + "; Attribute: " + attributeName);
+            return attribute;
+        }
+
+        if (!attribute) {
+            attribute = entity.createAttribute();
+            return attribute;
+        }
+    } catch (error) {
+        throw new Error(error);
+    }
+}
+
+var tempFile = java.io.File.createTempFile("OracleSDDMEntityAndAttributeCreattions-", ".tmp");
+openLogFile(tempFile);
+var csvInputFile = chooseCSVFile();
+var sc = new java.util.Scanner(new java.io.File(csvInputFile));
+logMessageToLogFile(tempFile, "Reading information from the CSV File: " + csvInputFile);
+var attributeName, mandatory, datatypeKind, domainName, logicalTypeName, entityName, pkFlag, tSize, tPrecision, tScale, rdbmsComments = "";
+sc.nextLine();
+
+
+while (sc.hasNext()) {
+    try {
+        sc_line = new java.util.Scanner(sc.nextLine());
+        sc_line.useDelimiter(",");
+
+        attributeName = sc_line.next().replace(/\n|\r/g, ""); // Attribute_Name
+        mandatory = sc_line.next().replace(/\n|\r/g, ""); // Mandatory
+        datatypeKind = sc_line.next().replace(/\n|\r/g, "");// DataType_Kind
+        domainName = sc_line.next().replace(/\n|\r/g, "");// Domain_Name
+        logicalTypeName = sc_line.next().replace(/\n|\r/g, ""); // Logical_Type_Name
+        entityName = sc_line.next().replace(/\n|\r/g, "");// Entity_Name
+        pkFlag = sc_line.next().replace(/\n|\r/g, ""); // PK_Flag
+        tSize = sc_line.next().replace(/\n|\r/g, ""); // T_Size
+        tPrecision = sc_line.next().replace(/\n|\r/g, ""); // T_Precision   
+        tScale = sc_line.next().replace(/\n|\r/g, "");// T_Scale
+        rdbmsComments = "";
+        while (sc_line.hasNext()) {
+            rdbmsComments += sc_line.next().replace(/\n|\r/g, "");
+            rdbmsComments += sc_line.hasNext() ? "," : "";
+        }
+
+    } catch (error) {
+        logMessageToLogFile(tempFile, "Error occurred while reading the next line from the CSV File " + csvInputFile + ": " + error);
+    }
+
+    //rdbmsComments = sc_line.next().replace(/\n|\r/g, "");// RDBMS_Comments
+    try {
+        var entity = createEntityIfNotExists(entityName);
+    } catch (error) {
+        logMessageToLogFile(tempFile, "Error occurred while creating the entity " + entityName + ": " + error);
+    }
+
+    var attribute = createAttributeIfNotExists(entity, attributeName);
+    attribute.setName(attributeName);
+    attribute.setUse(datatypeKind == "Domain" ? 0 : 1);
+    if (datatypeKind == "Domain") {
+        attribute.setUse(0);
+        dom = createDomainIfNotExists(domainName, tSize, tPrecision, tScale);
+        attribute.setDomain(dom);
+    } else {
+        logicalDt = model.design.getLogicalDatatypeSet().getLogTypeByName(logicalTypeName);
+        attribute.setLogicalDatatype(logicalDt);
+        if (tSize.length > 0) {
+            attribute.setDataTypeSize(tSize);
+        }
+        if (tPrecision.length > 0) {
+            attribute.setDataTypePrecision(tPrecision);
+        }
+        if (tScale.length > 0) {
+            attribute.setDataTypeScale(tScale);
+        }
+    }
+
+    attribute.setMandatory(mandatory == 'Y' ? true : false);
+    if (rdbmsComments.length > 0) {
+        attribute.setCommentInRDBMS(rdbmsComments);
+    }
+    logMessageToLogFile(tempFile, "Set the details for the attribute: " + attributeName);
+}
+tempFile.deleteOnExit();]]>
+        </script>
+    </scr>
+    <scr id="FE987B15-F23A-B5DF-9F01-10293EA0F42B" name="Dir function for Data Modeler - logical" object="logical" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[var dir = function (obj, search) {
+    with (new JavaImporter(java.util, java.util.stream)) {
+        var members = new HashMap();
+        var signature = function (method) {
+            var s = method.getReturnType().getSimpleName()
+                + " " + method.getName() + "(";
+            s = s + Arrays.stream(method.getParameters()).map(function (p) {
+                return p.getType().getSimpleName() + " " + p.getName();
+            }).collect(Collectors.joining(", ")) + ")";
+            return s;
+        }
+        for (var c = obj.getClass(); c != null; c = c.getSuperclass()) {
+            Arrays.stream(c.getFields()).forEach(function (f) {
+                members.putIfAbsent(f.getName(), f.getName());
+            });
+            Arrays.stream(c.getMethods()).forEach(function (m) {
+                members.putIfAbsent(m.getName(), signature(m));
+            });
+        }
+        return members.entrySet().stream()
+            .sorted(function (e1, e2) e1.getKey().compareTo(e2.getKey()))
+            .map(function (e) e.getValue())
+            .filter(function (p) !search || p.contains(search))
+            .collect(Collectors.toList());
+    }
+}
+
+
+var obj = model;
+var stringSelection = new java.awt.datatransfer.StringSelection(typeof obj + '\n' + obj + '\n' + dir(obj));
+var clipboard = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
+clipboard.setContents(stringSelection, null);]]>
+        </script>
+    </scr>
+    <scr id="2A611895-075F-E9C0-FBDA-DB565E3D09E6" name="Find And Replace Attribute Names" object="logical" engine="Oracle Nashorn" type="" var="model" library="Logical-Model-Methods" method="Find And Replace Attribute Names" purpose="transformation">
+        <script>
+            <![CDATA[var loop = true;
+var JOptionPane = javax.swing.JOptionPane;
+var showConfirmDialog = function (message) {
+   return JOptionPane.showConfirmDialog(null, message, "Replace Attribute Name",
+      JOptionPane.YES_NO_OPTION,
+      JOptionPane.QUESTION_MESSAGE);
+}
+while (loop) {
+   loop = false;
+   var findStr = JOptionPane.showInputDialog("Enter Find String");
+   if (findStr) {
+      findStr = findStr.replace(/_/g, " ");
+      var replaceStr = JOptionPane.showInputDialog("Enter Replace String").replace(/_/g, " ");
+      if (replaceStr) {
+         replaceStr = replaceStr.replace(/_/g, " ");;
+         var entities = model.getEntitySet().toArray();
+         var relations = model.getRelationSet().toArray();
+         for (var t = 0; t < entities.length; t++) {
+            var entity = entities[t];
+            var entName = entity.getName().replace(findStr, replaceStr);
+            entity.setName(entName);
+
+            for (var t = 0; t < entities.length; t++) {
+               entity = entities[t];
+               entity.getElementsCollection().forEach(function (element) {
+                  var cname = element.getName().replace(findStr, replaceStr);
+                  element.setName(cname);
+               });
+            }
+         }
+         for (var r = 0; r < relations.length; r++) {
+            var relation = relations[r];
+            relation.getAttributesCollection().forEach(function (attribute) {
+               var cname = attribute.getName().replace(findStr, replaceStr);
+               attribute.setName(cname);
+            });
+         }
+         if (JOptionPane.YES_OPTION == showConfirmDialog("Do you want to find and replace additional strings?")) {
+            loop = true;
+         } else {
+         	  loop = false;
+         }
+      }
+   }
+}]]>
+        </script>
+    </scr>
+    <scr id="037DDAD0-DB42-A74F-7D11-E3ABB3295E3C" name="Finding attributes ending with number - logical" object="logical" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[function logMessageToLogFile(file, content) {
+    content += '\n';
+    var b = content.getBytes();
+    java.nio.file.Files.write(file.toPath(), b, java.nio.file.StandardOpenOption.APPEND);
+}
+
+function openLogFile(tempFile) {
+    var pb = new java.lang.ProcessBuilder("notepad++.exe", tempFile.getAbsolutePath());
+    var p = pb.start();
+    try {
+        var rc = p.waitFor();
+    } catch (e) {
+    }
+}
+
+var tempFile = java.io.File.createTempFile("AttributesEndingWithNumber-", ".tmp");
+openLogFile(tempFile);
+
+entities = model.getEntitySet().toArray();
+for (var t = 0; t<entities.length;t++){
+ entity = entities[t];
+ attributes = entity.getElements();
+ size = entity.getElementsCollection().size();
+ for (var i = 0; i < size; i++) {
+	attribute = attributes[i];
+	aname = attribute.getName();
+	//logMessageToLogFile(tempFile, "Attribute Found:" + aname);
+	var match = aname.match(/[0-9]+$/ig);
+	if(match) {
+		logMessageToLogFile(tempFile, "Attribute Found:" + aname);
+	}
+ }
+}]]>
+        </script>
+    </scr>
+    <scr id="DFEFE33B-66C1-851B-DBAF-A96F0E968DAE" name="Order Entity Attributes(For Entire Logical Model)" object="logical" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[function addPKattributes(list, entity) {
+    pk = entity.getPK();
+    if (pk) {
+        pkattrs = entity.getPK().getAttributesInKey();
+    } else {
+        return;
+    }
+    if (pkattrs) {
+        for (var i = 0; i < pkattrs.length; i++) {
+            attr = pkattrs[i];
+            //in fact don't need this check, because PK attributes are processed first
+            if (!list.contains(attr)) {
+                list.add(attr);
+            }
+        }
+    }
+}
+
+function addFKattributes(list, entity) {
+    var fkeys = new java.util.ArrayList();
+    var attrs = entity.getAttributes();
+    for (var i = 0; i < attrs.length; i++) {
+        var attr = attrs[i];
+        if (attr.isFKAttribute()) {
+            fkeys.add(attr)
+        }
+    }
+
+    if (fkeys) {
+        for (var k = 0; k < fkeys.length; k++) {
+            fkey = fkeys[k];
+            if (!list.contains(fkey)) {
+                list.add(fkey);
+            }
+        }
+    }
+
+}
+
+
+function addMandatoryattributes(list, entity) {
+    var notNullAttrs = new java.util.ArrayList();
+    var attrs = entity.getAttributes();
+    for (var i = 0; i < attrs.length; i++) {
+        var attr = attrs[i];
+        if (attr.isMandatory()) {
+            notNullAttrs.add(attr)
+        }
+    }
+
+    for (var k = 0; k < notNullAttrs.length; k++) {
+        var notNullAttr = notNullAttrs[k];
+        if (!list.contains(notNullAttr)) {
+            list.add(notNullAttr);
+        }
+    }
+}
+
+list = new java.util.ArrayList();
+var entities = model.getEntitySet().toArray(); // Get the entities in the model
+if (entities) {
+    for (var i = 0; i < entities.length; i++) {
+        list.clear();
+        var entity = entities[i];        
+
+        addPKattributes(list, entity);
+
+        addFKattributes(list, entity);
+
+        addMandatoryattributes(list, entity);
+
+        ord_attrs = list.toArray();
+        for (var n = 0; n < ord_attrs.length; n++) {
+            entity.moveToIndex(ord_attrs[n], n);
+        }
+    }
+}]]>
+        </script>
+    </scr>
+    <scr id="80FFE235-BCE9-BAC0-EABB-818CBC775A98" name="Remove Attribute From Entities And Relations" object="logical" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[function getAttributeIfExists(entity, attributeName) {
+    var attribute = entity.getElementByName(attributeName);    
+	if (!attribute) {
+	  var relations = entity.getRelations();
+	  for (var i = 0; i < relations.size(); i++) {
+	      var relationshipAttributes = relations[i].getAttributesCollection();
+	      for (var j = 0; j < relationshipAttributes.size(); j++) {
+	          if (relationshipAttributes[j].getName().equalsIgnoreCase(attributeName)) {
+	              attribute = relationshipAttributes[j];
+	              return attribute;
+	          }
+	      }
+	  }
+	} else {            
+	  return attribute;
+	}
+}
+
+
+var JOptionPane = javax.swing.JOptionPane;
+var attrib2Remove = JOptionPane.showInputDialog("Enter the Attribute Name").replace(/_/g, " ");
+var entities = model.getEntitySet().toArray();
+for (var t = 0; t < entities.length; t++) {
+    var entity = entities[t];
+    attribute = getAttributeIfExists(entity ,attrib2Remove);
+    if (attribute) {attribute.remove();}
+}
+var relations = model.getRelationSet().toArray();
+
+for (var i = 0; i < relations.length; i++) {
+    var relation = relations[i];
+    relation.getAttributesCollection().forEach(function(attribute) {    	    
+        if (attribute.getName().equalsIgnoreCase(attrib2Remove)) {
+            attribute.remove();
+        }
+    });
+}]]>
+        </script>
+    </scr>
+    <scr id="0E20D677-C9C7-8C7E-EDF1-B3F03A0CAE68" name="Remove Entity Attributes Based On Relational Attributes" object="logical" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[var relations = model.getRelationSet().toArray();
+for (var r = 0; r < relations.length; r++) {
+    var relation = relations[r];
+    var entity = relation.getTargetEntity();    
+    relation.getAttributesCollection().forEach(function (attribute) {        
+        var entityAttribute = entity.getElementByName(attribute.getName());
+        if (entityAttribute) {
+            entityAttribute.remove();
+        }
+    });
+}]]>
+        </script>
+    </scr>
+    <scr id="9061C181-3F78-F54C-AF3C-D982097BDBAB" name="Standardize Relationship Name" object="logical" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[entities = model.getEntitySet().toArray();
+for (var t = 0; t < entities.length; t++) {
+    var relations = entities[t].getRelations();
+    for (var r = 0; r < relations.length; r++) {
+        if (relations[r].getName().startsWith("Relation")) {
+            var relNm = relations[r].getSourceEntity().getName() + " -< " + relations[r].getTargetEntity().getName()
+            relations[r].setName(relNm);
+            relNm = "";
+        }
+    }
+    relations = undefined;
+}]]>
+        </script>
+    </scr>
+    <scr id="BABB9715-6444-1FCA-4850-A6F3C1A49BEC" name="Trim Whitespaces from the Comments" object="logical" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[var entities = model.getEntitySet();
+if (entities) {
+    for (var i = 0; i < entities.length; i++) {
+        var entity = entities[i];
+        var commentInRDBMS = entity.getCommentInRDBMS().trim();
+        entity.getCommentInRDBMS(commentInRDBMS);
+        var attrs = entity.getAttributes();
+        for (var j = 0; j < attrs.length; j++) {
+            var attr = attrs[j];
+            commentInRDBMS = attr.getCommentInRDBMS().replace(/^\s+|\s+$/g, '');
+            attr.setCommentInRDBMS(commentInRDBMS);
+        }
+    }
+}]]>
+        </script>
+    </scr>
+    <scr id="5E0AE98C-1B72-195D-2989-8AEC8C3C9201" name="Add Template Table Columns to Table(Using Property)" object="relational" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[function createCustomColumnsInATable(t_tbl_name, table){
+    template = model.getTableSet().getByName(t_tbl_name);
+    tcolumns = template.getElements();
+    for (var i = 0; i < tcolumns.length; i++) {
+        column = tcolumns[i];
+        col = table.getElementByName(column.getName());
+        if (col == null) {
+            col = table.getColumnByProperty(p_name, column.getObjectID());
+        }
+        if (col == null) {
+            col = table.createColumn();
+        }
+        column.copy(col);
+        //set property after copy otherwise it'll be cleared by copy
+        col.setProperty(p_name, column.getObjectID());
+        table.setDirty(true);
+    }
+}
+var t_Fact_name = "Z_Template_Table_Fact";
+var t_Dim_name = "Z_Template_Table_Dim";
+var p_name = "ctemplateID";
+if (model.getTableSet().getByName(t_Fact_name) != null && model.getTableSet().getByName(t_Dim_name) != null) {
+    tables = model.getTableSet().toArray();
+    for (var t = 0; t < tables.length; t++) {
+        table = tables[t];
+        if (table.getClassificationType() == "Fact") {            
+            createCustomColumnsInATable(t_Fact_name, table);
+        } else if (table.getClassificationType() == "Dimension" || table.getClassificationType() == "Conformed Dimension") {            
+            createCustomColumnsInATable(t_Dim_name, table);
+        }      
+    }
+}]]>
+        </script>
+    </scr>
+    <scr id="8982C240-F7BC-177E-38DC-47E7F10A8EDA" name="Bulk Remove Column from all the tables but Z_Template" object="relational" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[var JOptionPane = javax.swing.JOptionPane;
+var column = JOptionPane.showInputDialog("Enter the Column Name").replace(/\s/g, "_");
+var tableArray = model.getTableSet().toArray();
+
+for (var i = 0; i < tableArray.length; i++) {
+    var table = tableArray[i];
+    if (table.getClassificationType()) {
+        var tblCol = table.getElementByName(column);
+        if (tblCol) {
+            tblCol.remove();
+        }
+    }
+}]]>
+        </script>
+    </scr>
+    <scr id="BB64A52E-B36B-E08D-7947-B4B450D0F3C3" name="Bulk Remove Column from Facts" object="relational" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[var JOptionPane = javax.swing.JOptionPane;
+var column = JOptionPane.showInputDialog("Enter the Column Name").replace(/\s/g, "_");
+var tableArray = model.getTableSet().toArray();
+
+for (var i = 0; i < tableArray.length; i++) {
+    var table = tableArray[i];
+    if (table.getClassificationType() === "Fact") {
+        var tblCol = table.getElementByName(column);
+        if (tblCol) {
+            tblCol.remove();
+        }
+    }
+}]]>
+        </script>
+    </scr>
+    <scr id="56D2C607-04C7-71BF-B1FE-A359352545C0" name="Clear NotNullConstraintName(For Entire Relational Model)" object="relational" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[tables = model.getTableSet().toArray();
+for (var t = 0; t < tables.length; t++) {
+    table = tables[t];
+    tcolumns = table.getElements();
+    for (var i = 0; i < tcolumns.length; i++) {
+        tcolumn = tcolumns[i];
+        if (tcolumn.getNotNullConstraintName()) { tcolumn.setNotNullConstraintName(""); }
+    }
+}]]>
+        </script>
+    </scr>
+    <scr id="6279C414-90DD-A52B-4CEB-8D49AB31DC10" name="Copy Comments to Comments in RDBMS" object="relational" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[max_length = 4000;
+function copyComments(object){
+ if(object.getCommentInRDBMS().equals("")){
+   if(!object.getComment().equals("")){
+     if(object.getComment().length()>max_length){
+       object.setCommentInRDBMS(object.getComment().substring(0, max_length));
+     }else{
+       object.setCommentInRDBMS(object.getComment());
+     }
+     object.setDirty(true);
+   }
+ }
+}
+
+tables = model.getTableSet().toArray();
+for (var t = 0; t<tables.length;t++){
+ table = tables[t]
+ copyComments(table);
+ columns = table.getElements();
+ size = table.getElementsCollection().size();
+ for (var i = 0; i < columns.length; i++) {
+	column = columns[i];
+	copyComments(column);
+ }
+ keys = table.getKeys();
+ for (var i = 0; i < keys.length; i++) {
+   key = keys[i];
+   if(!key.isFK()){
+     copyComments(key);
+   }else{
+     copyComments(key.getFKAssociation());
+   }
+ }
+}]]>
+        </script>
+    </scr>
+    <scr id="7C4EDFC0-26EA-859C-DBD9-AC9345DEAF98" name="Create index on FK" object="relational" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[function getIndex(tab,cols){
+ keys = tab.getKeys();
+ for (var i = 0; i < keys.length; i++) {
+  index = keys[i];
+  if(!(index.isPK() || index.isUnique()) && !index.isFK() && index.isIndexForColumns(cols)){
+     return index
+   }
+ }
+ return null;
+}
+
+tables = model.getTableSet().toArray();
+for (var t = 0; t<tables.length;t++){
+ table = tables[t];
+ indexes = table.getKeys();
+ for (var i = 0; i < indexes.length; i++) {
+    index = indexes[i];
+    if(index.isFK()){
+     columns = index.getColumns();
+     if(columns.length>0){
+       newIndex = getIndex(table,columns);
+       if(newIndex==null){
+         newIndex = table.createIndex()
+         table.setDirty(true);
+         for (var k = 0; k < columns.length; k++){
+           newIndex.add(columns[k]);
+         }
+       }
+     }
+   }
+ }
+}]]>
+        </script>
+    </scr>
+    <scr id="F54B1A9C-F951-EB88-E905-5599533569B1" name="Create subview from tables in serch result " object="relational" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[objs = model.getLastSearchResult().toArray();
+var dp;
+var sv;
+//create subview and add tables to it
+for(var i = 0;i<objs.length;i++){
+	obj = objs[i];
+	// use "Entity" for entities and logical model
+	if(obj.getObjectTypeName().equals("Table")){
+		if(dp==null){
+			dp = obj.getDesignPart();
+			sv = dp.createDesignPartSubView();
+			// uncomment next line if want to set name
+		     //sv.setName("Name");
+		     sv.getPlaceHolder().setVisible(true);
+		}
+		sv.addViewFor(obj);
+	}
+}
+if(dp!=null){
+ //add foreign keys if you want to
+ for(var i = 0;i<objs.length;i++){
+	obj = objs[i];
+	// use "Entity" for entities and logical model
+	if(obj.getObjectTypeName().equals("Table")){
+		tv = obj.getFirstViewForDPV(sv);
+		if(tv!=null){
+			//for entities and logical model use 
+			//tv.addTVRelations(); 
+			tv.addTVFKRelations();
+		}
+	}
+ }
+ //add Arcs if you want to
+ for(var i = 0;i<objs.length;i++){
+	obj = objs[i];
+	if(obj.getObjectTypeName().equals("Table")){
+		tv = obj.getFirstViewForDPV(sv);
+		if(tv!=null){
+			tv.addArcs();
+		}
+	}
+ }
+ //arrange diagram
+ sv.rearrangeNewDiagram();
+}]]>
+        </script>
+    </scr>
+    <scr id="EDD3F888-5308-D2ED-8F8B-1CE56A1DEDFF" name="Create-Else-Update Template Table Columns for all Tables" object="relational" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[// columns are found by column name
+// allowing reuse of already existing columns
+// dynamic property ctemplateID is set afterwards - will keep connection to template
+// column even if the name of column is changed
+var t_Dim_name = "Z_Template_Table_Dim";
+var t_Fact_name = "Z_Template_Table_Fact";
+var p_name = "ctemplateID";
+var t_name;
+if (model.getTableSet().getByLongName(t_Fact_name) != null && model.getTableSet().getByLongName(t_Dim_name) != null) {
+    tables = model.getTableSet().toArray();
+    for (var t = 0; t < tables.length; t++) {
+        table = tables[t];
+        if (table.getClassificationType() == "Fact") {
+            t_name = t_Fact_name;
+        } else if (table.getClassificationType() == "Dimension" || table.getClassificationType() == "Conformed Dimension") {
+            t_name = t_Dim_name;
+        }
+        template = model.getTableSet().getByLongName(t_name);
+        if (template) {
+            tcolumns = template.getElements();
+            // compare name ignoring the case
+            if (!table.getName().equalsIgnoreCase(t_Fact_name) &&
+                !table.getName().equalsIgnoreCase(t_Dim_name)) {
+                for (var i = 0; i < tcolumns.length; i++) {
+                    column = tcolumns[i];
+                    col = table.getElementByName(column.getName());
+                    if (col == null) {
+                        col = table.getColumnByProperty(p_name, column.getObjectID());
+                    }
+                    if (col == null) {
+                        col = table.createColumn();
+                    }
+                    column.copy(col);
+                    //set property after copy otherwise it'll be cleared by copy
+                    col.setProperty(p_name, column.getObjectID());
+                    table.setDirty(true);
+                }
+            }
+        }
+    }
+}]]>
+        </script>
+    </scr>
+    <scr id="08F25065-3F14-7C5C-B2DA-EE13B1764280" name="Dir function for Data Modeler - relational" object="relational" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[var dir = function (obj, search) {
+    with (new JavaImporter(java.util, java.util.stream)) {
+        var members = new HashMap();
+        var signature = function (method) {
+            var s = method.getReturnType().getSimpleName()
+                + " " + method.getName() + "(";
+            s = s + Arrays.stream(method.getParameters()).map(function (p) {
+                return p.getType().getSimpleName() + " " + p.getName();
+            }).collect(Collectors.joining(", ")) + ")";
+            return s;
+        }
+        for (var c = obj.getClass(); c != null; c = c.getSuperclass()) {
+            Arrays.stream(c.getFields()).forEach(function (f) {
+                members.putIfAbsent(f.getName(), f.getName());
+            });
+            Arrays.stream(c.getMethods()).forEach(function (m) {
+                members.putIfAbsent(m.getName(), signature(m));
+            });
+        }
+        return members.entrySet().stream()
+            .sorted(function (e1, e2) e1.getKey().compareTo(e2.getKey()))
+            .map(function (e) e.getValue())
+            .filter(function (p) !search || p.contains(search))
+            .collect(Collectors.toList());
+    }
+}
+
+var obj = model.design.createDomain();
+var stringSelection = new java.awt.datatransfer.StringSelection(typeof obj + '\n' + obj + '\n' + dir(obj));
+var clipboard = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
+clipboard.setContents(stringSelection, null);]]>
+        </script>
+    </scr>
+    <scr id="59049071-B209-9C29-CBD3-D42E00D6D516" name="Finding columns ending with number(For Entire Relational Model)" object="relational" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[function logMessageToLogFile(file, content) {
+    content += '\n';
+    var b = content.getBytes();
+    java.nio.file.Files.write(file.toPath(), b, java.nio.file.StandardOpenOption.APPEND);
+}
+
+function openLogFile(tempFile) {
+    var pb = new java.lang.ProcessBuilder("notepad++.exe", tempFile.getAbsolutePath());
+    var p = pb.start();
+    try {
+        var rc = p.waitFor();
+    } catch (e) {
+    }
+}
+
+var tempFile = java.io.File.createTempFile("AttributesEndingWithNumber-", ".tmp");
+openLogFile(tempFile);
+
+tables = model.getTableSet().toArray();
+for (var t = 0; t<tables.length;t++){
+ table = tables[t];
+ if(!table.getName().toUpperCase().startsWith("Z_TEMPLATE_TABLE")) {
+	 columns = table.getElements();
+	 size = table.getElementsCollection().size();
+	 for (var i = 0; i < size; i++) {
+		column = columns[i];
+		var cname = column.getName();
+		//logMessageToLogFile(tempFile, "column Found:" + cname);
+		var match = cname.match(/[^_][0-9]+$/ig);
+		if(match && !cname.toUpperCase().startsWith("CUSTOM")) {
+			logMessageToLogFile(tempFile, "Column " + cname + " found in table " + table);
+		}
+	}
+ }
+}]]>
+        </script>
+    </scr>
+    <scr id="829C1B29-5D41-33D7-7C9B-D917140BBBD8" name="Order Table Columns (For Table)" object="relational" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[// sorts table columns as asked here https://forums.oracle.com/forums/thread.jspa?threadID=2508315&tstart=0
+// "...first the pks columns, after them fk columns and after the not null columns"
+function addPKcolumns(list, table) {
+    pk = table.getPK();
+    if (pk != null) {
+        pcols = pk.getColumns();
+        for (var i = 0; i < pcols.length; i++) {
+            col = pcols[i];
+            //in fact don't need this check, because PK columns are processed first
+            if (!list.contains(col)) {
+                list.add(col);
+            }
+        }
+    }
+}
+
+function addFKcolumns(list, fkeys) {
+    for (var k = 0; k < fkeys.length; k++) {
+        fcols = fkeys[k].getColumns();
+        for (var i = 0; i < fcols.length; i++) {
+            col = fcols[i];
+            if (!list.contains(col)) {
+                list.add(col);
+            }
+        }
+    }
+}
+//adds mandatory or oprional columns to list depending on mand parameter
+function addMandatoryOptColumns(list, cols, mand) {
+    for (var i = 0; i < cols.length; i++) {
+        col = cols[i];
+        if (col.isMandatory() == mand && !col.getProperty('ctemplateID') && !list.contains(col)) {
+            list.add(col);
+        }
+    }
+}
+
+//add other columns but not the template columns
+function addOtherColumnsButNotTemplate(list, cols) {
+    for (var i = 0; i < cols.length; i++) {
+        col = cols[i];
+        if (!col.getProperty('ctemplateID') && !list.contains(col)) {
+            list.add(col);
+        }
+    }
+}
+
+//add other columns but not the template columns
+function addTemplateColumns(list, cols) {
+    for (var i = 0; i < cols.length; i++) {
+        col = cols[i];
+        if (col.getProperty('ctemplateID') && col.getName().toLowerCase().match(/Custom_\w+_\d+/gi) && !list.contains(col)) {
+            list.add(col);
+        }
+    }
+    for(var i = 0;i<cols.length;i++){
+		col = cols[i];
+		if(col.getName().toLowerCase().match(/Indication/gi) && !list.contains(col)){
+			list.add(col);
+		}
+	}
+    for (var i = 0; i < cols.length; i++) {
+        col = cols[i];
+        if (col.getName().toLowerCase().match(/Source_System_Code/gi) && !list.contains(col)) {
+            list.add(col);
+        }
+    }
+    for (var i = 0; i < cols.length; i++) {
+        col = cols[i];
+        if (col.getName().toLowerCase().match(/Source_Created_(At|By)/gi) && !list.contains(col)) {
+            list.add(col);
+        }
+    }
+    for (var i = 0; i < cols.length; i++) {
+        col = cols[i];
+        if (col.getName().toLowerCase().match(/Source_Updated_(At|By)/gi) && !list.contains(col)) {
+            list.add(col);
+        }
+    }
+    for (var i = 0; i < cols.length; i++) {
+        col = cols[i];
+        if (col.getName().toLowerCase().match(/Effective_\w+_Date/gi) && !list.contains(col)) {
+            list.add(col);
+        }
+    }
+    for (var i = 0; i < cols.length; i++) {
+        col = cols[i];
+        if (col.getName().toLowerCase().match(/Is_Active/gi) && !list.contains(col)) {
+            list.add(col);
+        }
+    }
+    for (var i = 0; i < cols.length; i++) {
+        col = cols[i];
+        if (col.getName().toLowerCase().match(/Created_(At|By)/gi) && !list.contains(col)) {
+            list.add(col);
+        }
+    }
+    for (var i = 0; i < cols.length; i++) {
+        col = cols[i];
+        if (col.getName().toLowerCase().match(/Updated_(At|By)/gi) && !list.contains(col)) {
+            list.add(col);
+        }
+    }
+
+	for(var i = 0;i<cols.length;i++){
+		col = cols[i];
+		if(col.getName().match(/Request_Queue_Id|ETL_EXECUTION_LOG_ID/gi) && !list.contains(col)){
+			list.add(col);
+		}
+	}
+
+	for(var i = 0;i<cols.length;i++){
+		col = cols[i];
+		if(col.getName().match(/SYS_(SOURCE_ID|DATASET_NAME)/gi) && !list.contains(col)){
+			list.add(col);
+		}
+	}
+}
+
+var JOptionPane = javax.swing.JOptionPane;
+var tableName = JOptionPane.showInputDialog("Please enter table name");
+if (tableName) {
+    var table;
+    var tables = model.getTableSet().toArray();
+    var list = new java.util.ArrayList();
+    for (var t = 0; t < tables.length; t++) {
+        if (tables[t].getName().equalsIgnoreCase(tableName)) {
+            table = tables[t];
+            break;
+        }
+        //    break;
+    }
+    if (table) {
+        list.clear();
+        cols = table.getElements();
+        // add PK columns to list
+        addPKcolumns(list, table);
+        // add FK columns to list
+        addFKcolumns(list, table.getFKAssociations());
+        //add mandatory columns
+        addMandatoryOptColumns(list, cols, true);
+        //add optional columns
+        addMandatoryOptColumns(list, cols, false);
+        //add Other columns but not template columns
+        addOtherColumnsButNotTemplate(list, cols);
+        //use list to reorder columns
+        addTemplateColumns(list, cols);
+        ord_cols = list.toArray();
+        for (var n = 0; n < ord_cols.length; n++) {
+            table.moveToIndex(ord_cols[n], n);
+        }
+        //prevent reordering from enginnering, can be changed with UI
+        table.setAllowColumnReorder(false);
+        table.setDirty(true);
+    }
+}]]>
+        </script>
+    </scr>
+    <scr id="1726EC74-A64B-0C0F-83DB-2A4BEF0D3DCA" name="Order Table Columns(For Entire Relational Model)" object="relational" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[// sorts table columns as asked here https://forums.oracle.com/forums/thread.jspa?threadID=2508315&tstart=0
+// "...first the pks columns, after them fk columns and after the not null columns"
+function addPKcolumns(list,table){
+	pk = table.getPK();
+	if(pk!=null){
+		pcols = pk.getColumns();
+		for(var i = 0;i<pcols.length;i++){
+			col = pcols[i];
+			//in fact don't need this check, because PK columns are processed first
+			if(!list.contains(col)){
+				list.add(col);
+			}
+		}
+	}
+}
+
+function addFKcolumns(list,fkeys){
+	for(var k=0;k<fkeys.length;k++){
+		fcols = fkeys[k].getColumns();
+		for(var i = 0;i<fcols.length;i++){
+		  col = fcols[i];
+		  if(!list.contains(col)){
+			list.add(col);
+		  }
+		}
+	}
+}
+//adds mandatory or oprional columns to list depending on mand parameter
+function addMandatoryOptColumns(list,cols, mand){
+	for(var i = 0;i<cols.length;i++){
+		col = cols[i];
+		if(col.isMandatory() == mand  && !col.getProperty('ctemplateID') && !list.contains(col)){
+			list.add(col);
+		}
+	}
+}
+
+//add other columns but not the template columns
+function addOtherColumnsButNotTemplate(list,cols){
+	for(var i = 0;i<cols.length;i++){
+		col = cols[i];
+		if(!col.getProperty('ctemplateID') && !list.contains(col)){
+			list.add(col);
+		}
+	}
+}
+
+//add other columns but not the template columns
+function addTemplateColumns(list, cols) {
+    for (var i = 0; i < cols.length; i++) {
+        col = cols[i];
+        if (col.getProperty('ctemplateID') && col.getName().toLowerCase().match(/Custom_\w+_\d+/gi) && !list.contains(col)) {
+            list.add(col);
+        }
+    }
+    for(var i = 0;i<cols.length;i++){
+		col = cols[i];
+		if(col.getName().toLowerCase().match(/Indication/gi) && !list.contains(col)){
+			list.add(col);
+		}
+	}
+    for (var i = 0; i < cols.length; i++) {
+        col = cols[i];
+        if (col.getName().toLowerCase().match(/Source_System_Code/gi) && !list.contains(col)) {
+            list.add(col);
+        }
+    }
+    for (var i = 0; i < cols.length; i++) {
+        col = cols[i];
+        if (col.getName().toLowerCase().match(/Source_Created_(At|By)/gi) && !list.contains(col)) {
+            list.add(col);
+        }
+    }
+    for (var i = 0; i < cols.length; i++) {
+        col = cols[i];
+        if (col.getName().toLowerCase().match(/Source_Updated_(At|By)/gi) && !list.contains(col)) {
+            list.add(col);
+        }
+    }
+    for (var i = 0; i < cols.length; i++) {
+        col = cols[i];
+        if (col.getName().toLowerCase().match(/Effective_\w+_Date/gi) && !list.contains(col)) {
+            list.add(col);
+        }
+    }
+    for (var i = 0; i < cols.length; i++) {
+        col = cols[i];
+        if (col.getName().toLowerCase().match(/Is_Active/gi) && !list.contains(col)) {
+            list.add(col);
+        }
+    }
+    for (var i = 0; i < cols.length; i++) {
+        col = cols[i];
+        if (col.getName().toLowerCase().match(/Created_(At|By)/gi) && !list.contains(col)) {
+            list.add(col);
+        }
+    }
+    for (var i = 0; i < cols.length; i++) {
+        col = cols[i];
+        if (col.getName().toLowerCase().match(/Updated_(At|By)/gi) && !list.contains(col)) {
+            list.add(col);
+        }
+    }
+
+	for(var i = 0;i<cols.length;i++){
+		col = cols[i];
+		if(col.getName().match(/Request_Queue_Id|ETL_EXECUTION_LOG_ID/gi) && !list.contains(col)){
+			list.add(col);
+		}
+	}
+
+	for(var i = 0;i<cols.length;i++){
+		col = cols[i];
+		if(col.getName().match(/SYS_(SOURCE_ID|DATASET_NAME)/gi) && !list.contains(col)){
+			list.add(col);
+		}
+	}	
+}
+
+tables = model.getTableSet().toArray();
+list = new java.util.ArrayList();
+for (var t = 0; t<tables.length;t++){
+	list.clear();	
+	table = tables[t];
+	if (table.getName().startsWith('Z_Template_Table')) { continue; }
+	cols = table.getElements();
+	// add PK columns to list
+	addPKcolumns(list,table);
+	// add FK columns to list
+	addFKcolumns(list,table.getFKAssociations());
+	//add mandatory columns
+	addMandatoryOptColumns(list,cols,true);
+	//add optional columns
+//	addMandatoryOptColumns(list,cols,false);
+	//add Other columns but not template columns
+	addOtherColumnsButNotTemplate(list, cols);
+	//use list to reorder columns
+	addTemplateColumns(list, cols);
+	ord_cols = list.toArray();
+	for(var n = 0;n<ord_cols.length;n++){
+		table.moveToIndex(ord_cols[n],n);
+	}
+	//prevent reordering from enginnering, can be changed with UI
+	table.setAllowColumnReorder(false);
+	table.setDirty(true);
+}]]>
+        </script>
+    </scr>
+    <scr id="4B47F45E-FF0D-7EEF-8340-16E8B656D009" name="Remove Check Constraint" object="relational" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[var tables = model.getTableSet().toArray();
+
+for (var i = 0; i < tables.length; i++) {
+    var table = tables[i];
+    table.setExistDependencyGenerateInDDl(false);
+
+    var relations = table.getAllFKeysEndingToTable();
+
+    for (var j = 0; j < relations.length; j++) {
+        var relation = relations[j];
+        relation.setColumnDependencyConstraintGenerateInDDL(false);
+    }
+}]]>
+        </script>
+    </scr>
+    <scr id="9BE4E26C-36D8-A92C-ADEA-F183327DC239" name="Remove Table abbr from column" object="relational" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[tables = model.getTableSet().toArray();
+for (var t = 0; t<tables.length;t++){
+ table = tables[t];
+ abbr = table.getAbbreviation()+"_";
+ count = table.getAbbreviation().length()+1;
+ if(!"_".equals(abbr)){
+     columns = table.getElements();
+     for (var i = 0; i < columns.length; i++) {
+        column = columns[i];
+        cname = column.getName();
+        if(cname.startsWith(abbr)){
+         column.setName(cname.substring(count));
+         table.setDirty(true);
+        }
+     }
+ }
+}]]>
+        </script>
+    </scr>
+    <scr id="0753035A-D2C6-53A5-9CF9-8F19879C9E65" name="Remove Table Attributes with None Generator" object="relational" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[var JOptionPane = javax.swing.JOptionPane;
+var showConfirmDialog = function (message) {
+    return JOptionPane.showConfirmDialog(null, message, "Confirm Delete",
+        JOptionPane.YES_NO_OPTION,
+        JOptionPane.QUESTION_MESSAGE);
+}
+var zTmpltTblStr = "Z_Template";
+var strOp = "";
+strOp += "table" + "\t" + "column" + '\t' + "Generator Long Name" + '\n';
+var customAttributes = ['Is_Active',
+    'Effective_Start_Date',
+    'Effective_End_Date',
+    'Source_Created_By',
+    'Created_By',
+    'Source_System_Code',
+    'Source_Created_At',
+    'Created_At',
+    'Source_Updated_By',
+    'Updated_By',
+    'Source_Updated_At',
+    'Updated_At',
+    'Is_Active',
+    'Effective_Start_Date',
+    'Effective_End_Date',
+    'Created_By',
+    'Created_At',
+    'Updated_By',
+    'Updated_At',
+    'SID',
+    'Source_System_Code',
+    'Source_Code',
+    'Indication',
+    'Request_Queue_Id'];
+
+var tables = model.getTableSet().toArray();
+for (var i = 0; i < tables.length; i++) {
+    var table = tables[i];
+    if (!table.getName().startsWith(zTmpltTblStr)) {
+        var columns = table.getElements();
+        for (var j = 0; j < columns.length; j++) {
+            var column = columns[j];
+            if (!column.getName().startsWith("Custom_")
+                && !column.isPKElement()
+                && !column.isFKElement()
+                && !column.getProperty('ctemplateID')
+                && customAttributes.indexOf(column.getName()) < 0) {
+                if (column.getGeneratorLongName().equalsIgnoreCase("None")) {
+                    strOp += table.getName() + "\t" + column.getName() + '\t' + column.getGeneratorLongName() + '\n';
+                    if (JOptionPane.YES_OPTION ==
+                        showConfirmDialog("Do you want to delete " + table.getName() + "." + column.getName() + "?")) {
+                        column.remove();
+                    }
+                }
+            }
+        }
+    }
+}
+var relations = model.getFKIndexAssociationSet().toArray();
+for (var j = 0; j < relations.length; j++) {
+    var relation = relations[j];
+    if (relation.getGeneratorLongName().equalsIgnoreCase("None")) {
+        strOp += relation.getName() + "\t" + relation.getName() + '\t' + relation.getGeneratorLongName() + '\n';
+        if (JOptionPane.YES_NO_OPTION == showConfirmDialog("Do you want to delete " + relation.getName() + "?")) {
+            relation.remove();
+        }
+    }
+}
+
+var stringSelection = new java.awt.datatransfer.StringSelection(strOp);
+var clipboard = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
+clipboard.setContents(stringSelection, null);]]>
+        </script>
+    </scr>
+    <scr id="973FB9E4-D8D8-F417-2C0B-6A9716BC6F3A" name="Remove Template Table Columns(Using Column Property)" object="relational" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[/* removes the columns created with "Table template..." script, also removes related attributes
+*  from logical model
+*  more details here http://www.thatjeffsmith.com/archive/2015/03/adding-common-columns-to-tables-via-templates-and-transformation-scripts/
+*/
+function removeColumnsFromTemplateTables(template) {
+    var t_Fact_name = "Z_Template_Table_Fact";
+    var t_Dim_name = "Z_Template_Table_Dim";
+    var p_name = "ctemplateID";
+    if (template != null) {
+        tcolumns = template.getElements();
+        tables = model.getTableSet().toArray();
+        for (var t = 0; t < tables.length; t++) {
+            table = tables[t];
+            // compare name ignoring the case
+            if (!table.getName().equalsIgnoreCase(t_Fact_name) && !table.getName().equalsIgnoreCase(t_Dim_name)) {
+                for (var i = 0; i < tcolumns.length; i++) {
+                    column = tcolumns[i];
+                    col = table.getColumnByProperty(p_name, column.getObjectID());
+                    if (col != null) {
+                        attr = col.getEngAttribute();
+                        if (attr != null) {
+                            ent = attr.getEntity();
+                            attr.remove();
+                            if (ent != null) {
+                                ent.setDirty(true);
+                            }
+                        }
+                        col.remove();
+                        table.setDirty(true);
+                    }
+                }
+            }
+        }
+    }
+}
+var t_Fact_name = "Z_Template_Table_Fact";
+var t_Dim_name = "Z_Template_Table_Dim";
+var p_name = "ctemplateID";
+template = model.getTableSet().getByName(t_Fact_name);
+removeColumnsFromTemplateTables(template);
+template = model.getTableSet().getByName(t_Dim_name);
+removeColumnsFromTemplateTables(template);]]>
+        </script>
+    </scr>
+    <scr id="9ADBAC25-6B62-5E13-2B1C-155B03B48C33" name="Set dynamic properties to Z_Template Table for property ctemplateID" object="relational" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[function generateGuid() {
+    var result, i, j;
+    result = '';
+    for (j = 0; j < 32; j++) {
+        if (j == 8 || j == 12 || j == 16 || j == 20)
+            result = result + '-';
+        i = Math.floor(Math.random() * 16).toString(16).toUpperCase();
+        result = result + i;
+    }
+    return result;
+}
+var templateString = 'ctemplateID';
+var templateTables = ['Z_Template_Table_Dim', 'Z_Template_Table_Fact'];
+for (var i = 0; i < templateTables.length; i++) {
+    var templateTable = templateTables[i];
+    var templateTableObj = model.getTableSet().getByLongName(templateTable);
+    if (templateTableObj) {
+        tcolumns = templateTableObj.getElements();
+
+        for (var j = 0; j < tcolumns.length; j++) {        	  
+            var tcolumn = tcolumns[j];
+            if (! tcolumn.getProperty(templateString)) {
+            	var templateUUID = generateGuid();
+            	tcolumn.setProperty(templateString, templateUUID);
+            }
+            tcolumn.clearEngineerTo();
+            tcolumn.setShouldEngineer(false, true);
+        }
+    }
+}]]>
+        </script>
+    </scr>
+    <scr id="3F7908B6-DDCB-E78F-91DE-7AD67A4D381D" name="Set ExistDependencyGenerateInDDlFalse for all tables" object="relational" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[var tables = model.getTableSet().toArray();
+
+for (var i = 0; i < tables.length; i++) {
+    var table = tables[i];
+    if (table.isExistDependencyGenerateInDDl()) {
+        javax.swing.JOptionPane.showMessageDialog(null, "Setting the Exist Depdency in DDL to false for table: " + table.getName());
+        table.setExistDependencyGenerateInDDl(false);
+    }
+
+    var relations = table.getAllFKeysEndingToTable();
+
+    for (var j = 0; j < relations.length; j++) {
+        var relation = relations[j];
+        if (relation.isColumnDependencyConstraintGenerateInDDL()) {
+//        	javax.swing.JOptionPane.showMessageDialog(null, "Setting the Exist Depdency in DDL to false for relation: " + relation.getName());
+        	relation.setColumnDependencyConstraintGenerateInDDL(false);
+        }
+    }
+}]]>
+        </script>
+    </scr>
+    <scr id="E60A5A28-BB9B-3787-10E7-259DF900B9E6" name="Table abbreviation to column" object="relational" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[tables = model.getTableSet().toArray();
+for (var t = 0; t<tables.length;t++){
+ table = tables[t];
+ abbr = table.getAbbreviation()+"_";
+ if(!"_".equals(abbr)){
+     columns = table.getElements();
+     for (var i = 0; i < columns.length; i++) {
+        column = columns[i];
+        cname = column.getName();
+        if(!cname.startsWith(abbr)){
+         column.setName(abbr+cname);
+        }
+     }
+ }
+}]]>
+        </script>
+    </scr>
+    <scr id="0BAA564F-AB5F-D776-2E4F-31FDB3047F69" name="Tables to lower case - Rhino" object="relational" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[tables = model.getTableSet().toArray();
+for (var t = 0; t<tables.length;t++){
+ table = tables[t];
+ name = table.getName().toLowerCase();
+ table.setName(name);
+ columns = table.getElements();
+ size = table.getElementsCollection().size();
+ for (var i = 0; i < size; i++) {
+	column = columns[i];
+	cname = column.getName().toLowerCase();
+	column.setName(cname);
+ }
+ table.setDirty(true);
+ keys = table.getKeys();
+ for (var i = 0; i < keys.length; i++) {
+  key = keys[i];
+    if(!key.isFK()){
+     kname = key.getName().toLowerCase();
+     key.setName(kname);
+   }else{
+     kname = key.getFKAssociation().getName().toLowerCase();
+     key.getFKAssociation().setName(kname);
+     key.getFKAssociation().setDirty(true);
+   }
+ }
+}]]>
+        </script>
+    </scr>
+    <scr id="5A8A151A-13FD-4B0A-E233-E3C5126BA02C" name="Tables to upper case - Rhino" object="relational" engine="Oracle Nashorn" type="" var="model" library="" method="" purpose="transformation">
+        <script>
+            <![CDATA[tables = model.getTableSet().toArray();
+for (var t = 0; t<tables.length;t++){
+ table = tables[t];
+ name = table.getName().toUpperCase();
+ table.setName(name);
+ columns = table.getElements();
+ size = table.getElementsCollection().size();
+ for (var i = 0; i < size; i++) {
+	column = columns[i];
+	cname = column.getName().toUpperCase();
+	column.setName(cname);
+ }
+ table.setDirty(true);
+ keys = table.getKeys();
+ for (var i = 0; i < keys.length; i++) {
+  key = keys[i];
+    if(!key.isFK()){
+     kname = key.getName().toUpperCase();
+     key.setName(kname);
+   }else{
+     kname = key.getFKAssociation().getName().toUpperCase();
+     key.getFKAssociation().setName(kname);
+     key.getFKAssociation().setDirty(true);
+   }
+ }
+}]]>
+        </script>
+    </scr>
+    <scr id="D36CE536-D575-BE5C-625F-23DE23913C6B" name="Relational Column Without RDBMS or Comments" object="Table" engine="Oracle Nashorn" type="Warning" var="table" library="ODMGeneral" method="checkComments" purpose="validation">
+        <script>
+            <![CDATA[]]>
+        </script>
+    </scr>
+    <scr id="D72E63EC-9DA2-3537-F8C9-AE8ACEDC73D2" name="Length of Not Null Constraint name" object="Column" engine="Oracle Nashorn" type="Error" var="column" library="ODMGeneral" method="NotNullConstr_Name_Length" purpose="validation">
+        <script>
+            <![CDATA[]]>
+        </script>
+    </scr>
+    <scr id="3F2B77AE-F97F-EF6D-4D6D-C9FE4CC78999" name="Optional FK with mandatory columns" object="Index/Constraint" engine="Oracle Nashorn" type="Warning" var="index" library="" method="" purpose="validation">
+        <script>
+            <![CDATA[var index;
+// define function - function parameter doesn't need to be named index
+function checkFKColumns(index){
+  //check it's foreign key index, otherwise FK is null
+ if(index.isFK()){
+ 	if(!index.getFKAssociation().isMandatory()){
+	 cols = index.getElements();
+	 for(var i=0;i<cols.length;i++){
+		if(cols[i].isMandatory()){
+			return false;
+		}
+	 }
+ 	}
+ }
+ return true;
+}
+// invoke the function
+checkFKColumns(index);]]>
+        </script>
+    </scr>
+    <scr id="9DF2F118-C6A6-4BD7-D160-BB21515A74E4" name="Logical Attribute Without RDBMS Comments" object="Attribute" engine="Oracle Nashorn" type="Error" var="attribute" library="ODMGeneral" method="checkRDBMSComments" purpose="validation">
+        <script>
+            <![CDATA[]]>
+        </script>
+    </scr>
+    <scr id="7C53C133-37A2-4CBB-B00A-5A566E6087DC" name="Logical Attribute Without Domain" object="Attribute" engine="Oracle Nashorn" type="Error" var="attribute" library="ODMGeneral" method="checkDomain" purpose="validation">
+        <script>
+            <![CDATA[]]>
+        </script>
+    </scr>
+
+    <lib id="B310E434-78AE-6AED-EA94-6808B0262483" name="ODMGeneral" engine="Oracle Nashorn" methods="checkComments,NotNullConstr_Name_Length,checkDomain,checkRDBMSComments">
+        <script>
+            <![CDATA[// variable used to return custom message
+var ruleMessage;
+// variable used to return the type of the rule Error
+// or Warning and red/blue color will be used for result
+// if another custom type is returned (Problem in the rule below) 
+// then result is colored in yellow
+var errType;
+var table;
+function checkRDBMSComments(attribute) {
+    result = true;
+    ruleMessage = "";
+    if (attribute.getCommentInRDBMS().equals("") || attribute.getCommentInRDBMS().equals(",,Yes")) {
+        ruleMessage = "No comments in RDBMS defined";
+        errType = "ERROR:";
+        result = false;
+    }
+    return result;
+}
+function checkComments(object) {
+    result = true;
+    ruleMessage = "";
+    if (object.getCommentInRDBMS().equals("") || object.getCommentInRDBMS().equals(",,Yes")) {
+        ruleMessage = "No comments in RDBMS defined";
+        errType = "Problem:";
+        result = false;
+    }
+    if (object.getComment().equals("")) {
+        if (ruleMessage.equals("")) {
+            ruleMessage = "No comments defined";
+        } else {
+            ruleMessage = ruleMessage + ", No comments defined";
+        }
+        // can be changed to Warning    
+        errType = "Warn:";
+        return false;
+    }
+    return result;
+}
+//rule for not null constraint name
+function NotNullConstr_Name_Length(column) {
+    model = column.getDesignPart();
+    name = column.getNotNullConstraintName();
+    result = true;
+    if (name != null && !"".equals(name)) {
+        holder = model.getNamingOptionsHolderFor("oracle.dbtools.crest.model.design.constraint.TableLevelConstraint");
+        if ((holder.getMaxNameLength() > 0) && (name.length() > holder.getMaxNameLength())) {
+            result = false;
+        }
+    }
+    return result
+}
+
+function checkDomain(attribute) {
+    result = true;
+    ruleMessage = "";
+    if (attribute.getDomain().getName() == "Unknown") {
+        ruleMessage = " No domain set for the attribute";
+        errType = "Problem:";
+        result = false;
+    }
+    return result;
+}]]>
+        </script>
+    </lib>
+    <lib id="BE1FDEC0-4B29-7134-4C9B-4620D3D173BE" name="Logical-Model-Methods" engine="Oracle Nashorn" methods="findAndReplaceAttributeNames">
+        <script>
+            <![CDATA[// Check Comments
+function findAndReplaceAttributeNames() {
+    var loop = true;
+    var JOptionPane = javax.swing.JOptionPane;
+    var showConfirmDialog = function (message) {
+        return JOptionPane.showConfirmDialog(null, message, "Replace Attribute Name",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE);
+    }
+    while (loop) {
+        loop = false;
+        var findStr = JOptionPane.showInputDialog("Enter Find String");
+        if (findStr) {
+            findStr = findStr.replace(/_/g, " ");
+            var replaceStr = JOptionPane.showInputDialog("Enter Replace String").replace(/_/g, " ");
+            if (replaceStr) {
+                replaceStr = replaceStr.replace(/_/g, " ");;
+                var entities = model.getEntitySet().toArray();
+                var relations = model.getRelationSet().toArray();
+                for (var t = 0; t < entities.length; t++) {
+                    var entity = entities[t];
+                    var entName = entity.getName().replace(findStr, replaceStr);
+                    entity.setName(entName);
+
+                    for (var t = 0; t < entities.length; t++) {
+                        entity = entities[t];
+                        entity.getElementsCollection().forEach(function (element) {
+                            var cname = element.getName().replace(findStr, replaceStr);
+                            element.setName(cname);
+                        });
+                    }
+                }
+                for (var r = 0; r < relations.length; r++) {
+                    var relation = relations[r];
+                    relation.getAttributesCollection().forEach(function (attribute) {
+                        var cname = attribute.getName().replace(findStr, replaceStr);
+                        attribute.setName(cname);
+                    });
+                }
+                if (JOptionPane.YES_OPTION == showConfirmDialog("Do you want to find and replace additional strings?")) {
+                    loop = true;
+                }
+            }
+         }
+         for (var r = 0; r < relations.length; r++) {
+            var relation = relations[r];
+            relation.getAttributesCollection().forEach(function (attribute) {
+               var cname = attribute.getName().replace(findStr, replaceStr);
+               attribute.setName(cname);
+            });
+         }
+         if (JOptionPane.YES_OPTION == showConfirmDialog("Do you want to find and replace additional strings?")) {
+            loop = true;
+         } else {
+         	  loop = false;
+         }
+      }
+   }
+}]]>
+        </script>
+    </lib>
+
+
+    <ddl_transformation_script_set id="B4E65BCB-CFF5-1302-E0BC-0C329BF9890E" name="Journal tables" description="" active="true">
+        <script id="9836D087-881D-2161-19AF-2C6DF49A964A"/>
+        <script id="1C0CDD35-A0D6-47E5-C702-7FB537C8A8C0"/>
+        <script id="B50F3C56-0DC4-6376-8CF9-9CB189DC97DD"/>
+        <script id="DC383793-5C2E-F62A-5241-35B8ACE86134"/>
+    </ddl_transformation_script_set>
+    <ddl_transformation_script_set id="86649BAE-547E-99D5-8B00-54B3BB9BB6BB" name="Empty script" description="" active="false">
+        <script id="0DC38187-8245-8904-7E00-D4B6DF394899"/>
+        <script id="27EEAD3F-3367-9D6F-8E02-D44189C855A1"/>
+        <script id="83D0D285-DF95-0BE7-EF4F-AC3F2D9CDE94"/>
+        <script id="6FDC20F3-D5B1-9711-C93F-745217AC8664"/>
+    </ddl_transformation_script_set>
+    <ddl_transformation_script_set id="B4E65BCB-CFF5-1302-E0BC-0C329BF9890E" name="Journal tables" description="" active="true">
+        <script id="9836D087-881D-2161-19AF-2C6DF49A964A"/>
+        <script id="1C0CDD35-A0D6-47E5-C702-7FB537C8A8C0"/>
+        <script id="B50F3C56-0DC4-6376-8CF9-9CB189DC97DD"/>
+        <script id="DC383793-5C2E-F62A-5241-35B8ACE86134"/>
+    </ddl_transformation_script_set>
+    <ddl_transformation_script_set id="86649BAE-547E-99D5-8B00-54B3BB9BB6BB" name="Empty script" description="" active="false">
+        <script id="0DC38187-8245-8904-7E00-D4B6DF394899"/>
+        <script id="27EEAD3F-3367-9D6F-8E02-D44189C855A1"/>
+        <script id="83D0D285-DF95-0BE7-EF4F-AC3F2D9CDE94"/>
+        <script id="6FDC20F3-D5B1-9711-C93F-745217AC8664"/>
+    </ddl_transformation_script_set>
+</dr_custom_scripts>
